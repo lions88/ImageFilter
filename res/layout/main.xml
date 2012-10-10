@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <ImageView
+        android:id="@+id/iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/button_change_to_gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="黑白效果" />
+
+        <Button
+            android:id="@+id/button_change_to_block"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="版画效果" />
+
+        <Button
+            android:id="@+id/button_change_to_old"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="怀旧效果" />
+
+        <Button
+            android:id="@+id/button_change_to_ice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="冰冻效果" />
+
+        <Button
+            android:id="@+id/button_change_to_carton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="连环画效果" />
+
+        <Button
+            android:id="@+id/button_change_to_molten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="铸融效果" />
+
+        <Button
+            android:id="@+id/button_change_to_soft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="柔滑美白效果" />
+
+        <Button
+            android:id="@+id/button_change_to_eclosion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="羽化效果" />
+
+        <Button
+            android:id="@+id/button_change_to_relief"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="浮雕效果" />
+
+        <Button
+            android:id="@+id/button_change_to_oid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="油画效果" />
+
+        <Button
+            android:id="@+id/button_change_to_invert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="反色效果" />
+
+        <Button
+            android:id="@+id/button_change_to_light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="光照效果" />
+
+        <Button
+            android:id="@+id/button_change_to_haha"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="哈哈镜" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/compose_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="合成图片" />
+
+        <Button
+            android:id="@+id/original_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="原始效果" >
+        </Button>
+    </LinearLayout>
+
+</FrameLayout>
