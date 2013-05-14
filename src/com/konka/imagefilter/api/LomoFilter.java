@@ -12,94 +12,74 @@ public class LomoFilter {
 	
 	public static Bitmap changeToLomo(Bitmap bitmap) {
 		
-		int width = bitmap.getWidth();
-		int height = bitmap.getHeight();
-		
-		Bitmap returnBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
-		Canvas canvas = new Canvas(returnBitmap);
-		Paint paint = new Paint();
-		//抗锯齿
-		paint.setAntiAlias(true);
-		
-		float scaleValue = 95 * 1.0F / 127;  
-		
-		ColorMatrix scaleMatrix = new ColorMatrix();
-		scaleMatrix.reset();
-		scaleMatrix.setScale((float) (scaleValue + 0.2), (float) (scaleValue + 0.4), (float)(scaleValue + 0.2), 1);
-		
-		ColorMatrix satMatrix = new ColorMatrix();
-		satMatrix.reset();
-		satMatrix.setSaturation(0.85f);
-		
-		ColorMatrix hueMatrix = new ColorMatrix();
-		hueMatrix.reset();
-		hueMatrix.setRotate(0, 5);
-		hueMatrix.setRotate(1, 5);
-		hueMatrix.setRotate(2, 5);
-		
-		ColorMatrix allMatrix = new ColorMatrix();
-		allMatrix.reset();
-		allMatrix.postConcat(scaleMatrix);
-		allMatrix.postConcat(satMatrix);
-		//allMatrix.postConcat(hueMatrix);
-		
-		paint.setColorFilter(new ColorMatrixColorFilter(allMatrix));
-		canvas.drawBitmap(bitmap, 0, 0, paint);
-		
-		double radius = (double) (width / 2) * 95 / 100;
-		double centerX = width / 2f;
-		double centerY = height / 2f;
-		
-		int pixels[] = new int[width * height];
-		returnBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-		
-		int currentPos;
-		
-		double pixelsFalloff = 3.5;
-		
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
-				double dis = Math.sqrt(Math.pow((centerX - x), 2) + Math.pow(centerY - y, 2));
-				currentPos = y * width + x;
-				
-				if (dis > radius) {
-						int pixR = Color.red(pixels[currentPos]);
-						int pixG = Color.green(pixels[currentPos]);
-						int pixB = Color.blue(pixels[currentPos]);
-						
-						double scaler = scaleFunction(radius, dis, pixelsFalloff);
-						
-						scaler = Math.abs(scaler);
-						Log.d("Ragnarok", "scaler=" + scaler);
-						
-						int newR = (int) (pixR - scaler);
-						int newG = (int) (pixG - scaler);
-						int newB = (int) (pixB - scaler);
-						
-						//Log.d("Ragnarok", "newR=" + newR + ", newG=" + newG + ", newB=" + newB);
-						
-						newR = Math.min(255, Math.max(0, newR));
-						newG = Math.min(255, Math.max(0, newG));
-						newB = Math.min(255, Math.max(0, newB));
-						
-						//Log.d("Ragnarok", "x=" + x + ", y=" + y);
-						//Log.d("Ragnarok", "newR=" + newR + ", newG=" + newG + ", newB=" + newB);
-						
-						pixels[currentPos] = Color.argb(255, newR, newG, newB);
-						
-						
-				}
-			}
-		}
-		
-		returnBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-		
-		
-		return returnBitmap;
+		int width = bitmap.getWidth();  
+	        int height = bitmap.getHeight();  
+	        int dst[] = new int[width*height];  
+	        bitmap.getPixels(dst, 0, width, 0, 0, width, height);  
+	          
+	        int ratio = width > height ? height*32768/width : width*32768/height;  
+	        int cx = width >> 1;  
+	        int cy = height >> 1;  
+	        int max = cx * cx + cy * cy;  
+	        int min = (int) (max * (1 - 0.8f));  
+	        int diff = max - min;  
+          
+	        int ri, gi, bi;  
+	        int dx, dy, distSq, v;  
+	          
+	        int R, G, B;  
+	          
+	        int value;  
+	        int pos, pixColor;  
+	        int newR, newG, newB;  
+	        for(int y=0; y<height; y++){  
+	            for(int x=0; x<width; x++){  
+	                pos = y*width + x;  
+	                pixColor = dst[pos];  
+	                R = Color.red(pixColor);          
+	                G = Color.green(pixColor);        
+	                B = Color.blue(pixColor);  
+	                  
+	                value = R<128 ? R : 256-R;  
+	                newR = (value*value*value)/64/256;  
+	                newR = (R<128 ? newR : 255-newR);  
+	                  
+	                value = G<128 ? G : 256-G;  
+	                newG = (value*value)/128;  
+	                newG = (G<128 ? newG : 255-newG);  
+	                  
+	                newB = B/2 + 0x25;    
+	                  
+	                //==========边缘黑暗==============//  
+	                dx = cx - x;  
+	                dy = cy - y;  
+	                if (width > height)   
+	                    dx = (dx * ratio) >> 15;  
+	                else   
+	                    dy = (dy * ratio) >> 15;  
+	                  
+	                distSq = dx * dx + dy * dy;  
+	                if (distSq > min){  
+	                    v = ((max - distSq) << 8) / diff;  
+	                    v *= v;  
+	  
+	                    ri = (int)(newR * v) >> 16;  
+	                    gi = (int)(newG * v) >> 16;  
+	                    bi = (int)(newB * v) >> 16;  
+	  
+	                    newR = ri > 255 ? 255 : (ri < 0 ? 0 : ri);  
+	                    newG = gi > 255 ? 255 : (gi < 0 ? 0 : gi);  
+	                    newB = bi > 255 ? 255 : (bi < 0 ? 0 : bi);  
+	                }  
+	                //==========边缘黑暗end==============//  
+	                  
+	                dst[pos] = Color.rgb(newR, newG, newB);  
+	            }  
+	        }  
+	  
+	        Bitmap acrossFlushBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);  
+	        acrossFlushBitmap.setPixels(dst, 0, width, 0, 0, width, height);  
+	        return acrossFlushBitmap;  
 	}
-	 
-	private static double scaleFunction(double radius, double dis, double pixelsFallof) {
-		return 1 - Math.pow((double)((dis - radius) / pixelsFallof), 2);
-	}	
 	
 }
